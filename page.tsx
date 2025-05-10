@@ -264,6 +264,7 @@ export default function Home() {
         validationResults = result.results || []
       } catch (error) {
         validationResults = phoneNumbers.map((number) => ({
+          success: false,
           number,
           valid: false,
           line_type: "invalid",

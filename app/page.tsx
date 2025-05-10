@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-
 import { useState } from "react"
 import * as XLSX from "xlsx"
 import Papa from "papaparse"
@@ -23,15 +22,16 @@ import {
 
 // Define types for validation results
 interface ValidationResult {
-  success: boolean
-  valid: boolean
+  success?: boolean
+  valid:     boolean
   line_type: string
-  number?: string
-  carrier?: string
+  number?:   string
+  carrier?:  string
   location?: string
-  country?: string
-  error?: string
+  country?:  string
+  error?:    string
 }
+
 
 interface HistoryItem {
   number: string
@@ -254,25 +254,50 @@ export default function Home() {
           return prev + 5
         })
       }, 200)
+// ↓↓↓ REPLACE your old try/catch here with this ↓↓↓
+let validationResults: ValidationResult[] = []
 
-      let validationResults: ValidationResult[] = []
-      try {
-        const response = await fetch("/api/validate-numbers", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ numbers: phoneNumbers }),
-        })
-        const result = await response.json()
-        validationResults = result.results || []
-      } catch (error) {
-        validationResults = phoneNumbers.map((number) => ({
-          number,
-          valid: false,
-          line_type: "invalid",
-          error: "Network error",
-          success: false
-        }))
-      }
+try {
+  const response = await fetch("/api/validate-numbers", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ numbers: phoneNumbers }),
+  })
+  const json = await response.json()
+  const apiResults = (json.results || []) as Array<{
+    success:boolean
+    valid: boolean
+    line_type: string
+    number?: string
+    carrier?: string
+    location?: string
+    country?: string
+    error?: string
+  }>
+
+  validationResults = apiResults.map(r => ({
+    success:   r.valid,      // ← DERIVE success from valid
+    valid:     r.valid,
+    line_type: r.line_type,
+    number:    r.number,
+    carrier:   r.carrier,
+    location:  r.location,
+    country:   r.country,
+    error:     r.error,
+  }))
+} catch (err) {
+  validationResults = phoneNumbers.map(number => ({
+    success:   false, // ✅ Add this line
+    valid:     false,
+    line_type: "invalid",
+    number,
+    error:     "Network error",
+  }))
+}
+
+// ↑↑↑ END replacement ↑↑↑
+
+
 
       clearInterval(progressInterval)
       setProgress(100)
