@@ -12,6 +12,7 @@
     "@radix-ui/react-progress": "^1.1.6",
     "@radix-ui/react-tabs": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.6",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.10.5",
     "lucide-react": "^0.453.0",
