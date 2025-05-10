@@ -56,6 +56,17 @@ export async function POST(request: Request) {
     );
   }
 
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.error("❌ API Key is missing or undefined");
+    return NextResponse.json(
+      { error: "Internal server error: API key not configured" },
+      { status: 500 }
+    );
+  }
+  const headers = { apikey: apiKey };
+  console.log("Using API Key:", apiKey);
+
   const results: any[] = [];
   for (const phoneNumber of numbers) {
     if (!phoneNumber) {
@@ -69,10 +80,9 @@ export async function POST(request: Request) {
     }
 
     const url = `https://api.apilayer.com/number_verification/validate?number=${phoneNumber}`;
-    const headers = { apikey: process.env.API_KEY || "" };
-
     try {
       const response = await fetchWithRetry(url, { headers });
+      console.log("Fetch headers sent:", headers);
       const data: ApiResponse = await response.json();
       console.log("✅ API Response for", phoneNumber, ":", data);
 
