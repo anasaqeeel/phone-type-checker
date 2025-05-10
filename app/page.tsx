@@ -270,6 +270,7 @@ export default function Home() {
           valid: false,
           line_type: "invalid",
           error: "Network error",
+          success: false, // Add this line to fix the type error
         }))
       }
 
