@@ -56,8 +56,11 @@ export async function GET(request: Request) {
       { status: 400 }
     );
   }
+  console.log("📞 Received phone number:", phoneNumber);
 
   const apiKey = process.env.API_KEY;
+  console.log("🔐 Loaded API Key:", apiKey || "API_KEY is undefined"); // ✅ This also shows up in Railway logs
+
   if (!apiKey) {
     console.error("❌ API Key is missing or undefined");
     return NextResponse.json(
